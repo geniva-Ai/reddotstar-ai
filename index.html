@@ -361,50 +361,64 @@
 
   }
 
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const chatBox = document.getElementById("chatBox");
+  const message = input.value.trim();
 
-  function sendMessage() {
+  if (!message) return;
 
-    const input =
-      document.getElementById("userInput");
+  input.value = "";
+  input.disabled = true;
 
-    const message =
-      input.value.trim();
+  const userMessage = document.createElement("div");
+  userMessage.className = "message";
 
-    if (!message) return;
+  const userLabel = document.createElement("b");
+  userLabel.textContent = "You: ";
+  userMessage.appendChild(userLabel);
+  userMessage.appendChild(document.createTextNode(message));
+  chatBox.appendChild(userMessage);
 
+  const replyBox = document.createElement("div");
+  replyBox.className = "message";
+  replyBox.textContent = "RedDotStar AI: Soch raha hai...";
+  chatBox.appendChild(replyBox);
 
-    const chatBox =
-      document.getElementById("chatBox");
+  const WORKER_URL =
+    "https://reddotstar-ai.geniva0ai.workers.dev/";
 
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({ message: message })
+    });
 
-    const userMessage =
-      document.createElement("div");
+    const data = await response.json();
 
-    userMessage.className = "message";
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed.");
+    }
 
-    userMessage.innerHTML =
-      "<b>You:</b> " + message;
+    replyBox.textContent =
+      "RedDotStar AI: " + (data.reply || "Koi jawab nahi mila.");
 
-    chatBox.appendChild(userMessage);
+  } catch (error) {
+    replyBox.textContent =
+      "Error: " + error.message +
+      " Please try again.";
 
-
-    input.value = "";
-
-
-    const reply =
-      document.createElement("div");
-
-    reply.className = "message";
-
-    reply.innerHTML =
-      "<b>RedDotStar AI:</b> AI connection will be added next.";
-
-    chatBox.appendChild(reply);
-
-
-    chatBox.scrollTop =
-      chatBox.scrollHeight;
+  } finally {
+    input.disabled = false;
+    input.focus();
+    chatBox.scrollTop = chatBox.scrollHeight;
   }
+}
+
 
 </script>
 
