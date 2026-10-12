@@ -1,322 +1,1096 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>RedDotStar AI Lab</title>
+<title>RedDotStar AI Lab</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+<style>
 
-    body {
-      background: #f7f8fc;
-      color: #171717;
-    }
+/* =========================
+   RESET
+========================= */
 
-    header {
-      background: #ffffff;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 15px 25px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, Helvetica, sans-serif;
+}
 
-    .logo {
-      font-size: 22px;
-      font-weight: bold;
-    }
+body{
+  background:#f6f7fb;
+  color:#171717;
+  min-height:100vh;
+}
 
-    .logo span {
-      color: #e53935;
-    }
+/* =========================
+   APP LAYOUT
+========================= */
 
-    nav button {
-      border: none;
-      background: transparent;
-      padding: 9px 12px;
-      cursor: pointer;
-      font-size: 15px;
-    }
+.app{
+  display:flex;
+  min-height:100vh;
+}
 
-    nav button:hover {
-      color: #e53935;
-    }
+/* =========================
+   SIDEBAR
+========================= */
 
-    .page {
-      display: none;
-    }
+.sidebar{
+  width:250px;
+  background:#111216;
+  color:white;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  padding:22px 16px;
+  display:flex;
+  flex-direction:column;
+  z-index:100;
+}
 
-    .page.active {
-      display: block;
-    }
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px 25px;
+}
 
-    .hero {
-      text-align: center;
-      padding: 80px 20px 50px;
-    }
+.brand-logo{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#ff3131,#c90000);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:19px;
+  font-weight:bold;
+  box-shadow:0 5px 18px rgba(255,40,40,.3);
+}
 
-    .hero h1 {
-      font-size: 44px;
-      margin-bottom: 15px;
-    }
+.brand-name{
+  font-size:17px;
+  font-weight:700;
+}
 
-    .hero h1 span {
-      color: #e53935;
-    }
+.brand-name span{
+  color:#ff4141;
+}
 
-    .hero p {
-      color: #666;
-      font-size: 18px;
-      margin-bottom: 30px;
-    }
+.new-chat{
+  width:100%;
+  border:1px solid #34353b;
+  background:#1b1c21;
+  color:white;
+  padding:13px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:14px;
+  margin-bottom:20px;
+  transition:.2s;
+}
 
-    .main-btn {
-      background: #e53935;
-      color: white;
-      border: none;
-      padding: 14px 25px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
+.new-chat:hover{
+  background:#27282e;
+}
 
-    .tools {
-      max-width: 1000px;
-      margin: auto;
-      padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 18px;
-    }
+.nav-title{
+  color:#777982;
+  font-size:11px;
+  text-transform:uppercase;
+  padding:10px;
+  letter-spacing:1px;
+}
 
-    .card {
-      background: white;
-      border: 1px solid #e5e5e5;
-      border-radius: 12px;
-      padding: 25px;
-      text-align: center;
-    }
+.side-btn{
+  width:100%;
+  border:none;
+  background:transparent;
+  color:#c9cad0;
+  text-align:left;
+  padding:12px 13px;
+  border-radius:10px;
+  cursor:pointer;
+  margin:2px 0;
+  font-size:14px;
+  transition:.2s;
+}
 
-    .card h3 {
-      margin-bottom: 10px;
-    }
+.side-btn:hover,
+.side-btn.active{
+  background:#292a30;
+  color:white;
+}
 
-    .card p {
-      color: #777;
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
+.side-icon{
+  display:inline-flex;
+  width:25px;
+  font-size:17px;
+}
 
-    .card button {
-      border: 1px solid #ddd;
-      background: white;
-      padding: 9px 15px;
-      border-radius: 7px;
-      cursor: pointer;
-    }
+.sidebar-bottom{
+  margin-top:auto;
+}
 
-    .chat-container {
-      max-width: 800px;
-      margin: 50px auto;
-      padding: 20px;
-    }
+.credit-box{
+  background:#1c1d22;
+  border:1px solid #303138;
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:12px;
+}
 
-    .chat-container h2 {
-      text-align: center;
-      margin-bottom: 25px;
-    }
+.credit-box small{
+  color:#8d8f98;
+}
 
-    .chat-box {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      min-height: 350px;
-      padding: 20px;
-      margin-bottom: 15px;
-    }
+.credit-box strong{
+  display:block;
+  margin-top:5px;
+}
 
-    .message {
-      margin-bottom: 15px;
-      padding: 12px;
-      border-radius: 8px;
-      background: #f1f1f1;
-    }
+/* =========================
+   MAIN
+========================= */
 
-    .input-area {
-      display: flex;
-      gap: 10px;
-    }
+.main{
+  margin-left:250px;
+  width:calc(100% - 250px);
+  min-height:100vh;
+}
 
-    .input-area input {
-      flex: 1;
-      padding: 14px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 15px;
-    }
+/* =========================
+   TOP BAR
+========================= */
 
-    .input-area button {
-      background: #e53935;
-      color: white;
-      border: none;
-      padding: 0 22px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+.topbar{
+  height:68px;
+  background:white;
+  border-bottom:1px solid #e7e8ec;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 30px;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
 
-    footer {
-      text-align: center;
-      padding: 40px 20px;
-      color: #777;
-      font-size: 14px;
-    }
+.top-title{
+  font-size:16px;
+  font-weight:700;
+}
 
-    @media (max-width: 650px) {
-      header {
-        flex-direction: column;
-        gap: 10px;
-      }
+.top-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 
-      nav button {
-        padding: 7px;
-        font-size: 13px;
-      }
+.icon-btn{
+  width:38px;
+  height:38px;
+  border:1px solid #e2e3e7;
+  background:white;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:17px;
+}
 
-      .hero h1 {
-        font-size: 32px;
-      }
+.profile{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:#17181d;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:bold;
+}
 
-      .input-area {
-        flex-direction: column;
-      }
+/* =========================
+   PAGE
+========================= */
 
-      .input-area button {
-        padding: 13px;
-      }
-    }
-  </style>
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+/* =========================
+   HOME
+========================= */
+
+.home{
+  max-width:1150px;
+  margin:auto;
+  padding:70px 30px;
+}
+
+.hero{
+  text-align:center;
+  padding:35px 10px 60px;
+}
+
+.hero-logo{
+  width:70px;
+  height:70px;
+  border-radius:22px;
+  margin:0 auto 25px;
+  background:linear-gradient(135deg,#ff3434,#bd0000);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  font-weight:bold;
+  box-shadow:0 15px 35px rgba(220,0,0,.2);
+}
+
+.hero h1{
+  font-size:52px;
+  line-height:1.1;
+  margin-bottom:18px;
+}
+
+.hero h1 span{
+  color:#e21f26;
+}
+
+.hero p{
+  color:#70727b;
+  font-size:18px;
+  max-width:650px;
+  margin:auto;
+  line-height:1.6;
+}
+
+.hero-buttons{
+  margin-top:30px;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.primary-btn{
+  border:none;
+  background:#e21f26;
+  color:white;
+  padding:14px 25px;
+  border-radius:11px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(226,31,38,.2);
+}
+
+.primary-btn:hover{
+  background:#c9161d;
+}
+
+.secondary-btn{
+  border:1px solid #dedfe4;
+  background:white;
+  padding:14px 25px;
+  border-radius:11px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* =========================
+   TOOL CARDS
+========================= */
+
+.section-title{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.section-title h2{
+  font-size:26px;
+}
+
+.section-title p{
+  color:#777;
+  margin-top:7px;
+}
+
+.tools{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+
+.tool-card{
+  background:white;
+  border:1px solid #e4e5e9;
+  border-radius:18px;
+  padding:25px;
+  transition:.25s;
+  cursor:pointer;
+}
+
+.tool-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 15px 35px rgba(0,0,0,.07);
+}
+
+.tool-icon{
+  width:52px;
+  height:52px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  background:#f1f2f5;
+  margin-bottom:18px;
+}
+
+.tool-card h3{
+  margin-bottom:8px;
+}
+
+.tool-card p{
+  color:#777;
+  font-size:14px;
+  line-height:1.5;
+  min-height:42px;
+}
+
+.tool-link{
+  display:inline-block;
+  margin-top:18px;
+  color:#df1e25;
+  font-size:14px;
+  font-weight:bold;
+}
+
+/* =========================
+   CHAT
+========================= */
+
+.chat-page{
+  height:calc(100vh - 68px);
+  display:flex;
+  flex-direction:column;
+}
+
+.chat-header{
+  padding:22px 30px;
+  border-bottom:1px solid #e7e8ec;
+  background:white;
+}
+
+.chat-header h2{
+  font-size:20px;
+}
+
+.chat-header p{
+  color:#777;
+  font-size:13px;
+  margin-top:5px;
+}
+
+.chat-box{
+  flex:1;
+  overflow-y:auto;
+  padding:35px 20px 130px;
+  max-width:900px;
+  width:100%;
+  margin:auto;
+}
+
+.message-row{
+  display:flex;
+  margin-bottom:25px;
+  gap:12px;
+}
+
+.message-row.user{
+  justify-content:flex-end;
+}
+
+.avatar{
+  min-width:38px;
+  height:38px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:17px;
+  background:#18191e;
+  color:white;
+}
+
+.user .avatar{
+  background:#e21f26;
+  order:2;
+}
+
+.message{
+  max-width:75%;
+  padding:13px 16px;
+  border-radius:15px;
+  line-height:1.6;
+  font-size:14px;
+  white-space:pre-wrap;
+}
+
+.ai-message{
+  background:white;
+  border:1px solid #e3e4e8;
+}
+
+.user-message{
+  background:#e21f26;
+  color:white;
+  border-bottom-right-radius:4px;
+}
+
+.ai-message{
+  border-bottom-left-radius:4px;
+}
+
+/* =========================
+   THINKING
+========================= */
+
+.thinking{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#777;
+}
+
+.dot{
+  width:7px;
+  height:7px;
+  background:#e21f26;
+  border-radius:50%;
+  animation:bounce 1.2s infinite;
+}
+
+.dot:nth-child(2){
+  animation-delay:.15s;
+}
+
+.dot:nth-child(3){
+  animation-delay:.3s;
+}
+
+@keyframes bounce{
+  0%,60%,100%{
+    transform:translateY(0);
+    opacity:.4;
+  }
+  30%{
+    transform:translateY(-5px);
+    opacity:1;
+  }
+}
+
+/* =========================
+   CHAT INPUT
+========================= */
+
+.chat-input-wrap{
+  position:fixed;
+  bottom:0;
+  left:250px;
+  right:0;
+  background:linear-gradient(transparent,#f6f7fb 28%);
+  padding:30px 25px 22px;
+}
+
+.chat-input{
+  max-width:900px;
+  margin:auto;
+  background:white;
+  border:1px solid #dfe0e5;
+  border-radius:17px;
+  display:flex;
+  align-items:center;
+  padding:7px;
+  box-shadow:0 8px 30px rgba(0,0,0,.06);
+}
+
+.chat-input input{
+  flex:1;
+  border:none;
+  outline:none;
+  padding:14px;
+  font-size:15px;
+  background:transparent;
+}
+
+.send-btn{
+  width:45px;
+  height:45px;
+  border:none;
+  border-radius:13px;
+  background:#e21f26;
+  color:white;
+  cursor:pointer;
+  font-size:18px;
+}
+
+.send-btn:disabled{
+  opacity:.5;
+}
+
+/* =========================
+   OTHER PAGES
+========================= */
+
+.feature-page{
+  max-width:950px;
+  margin:auto;
+  padding:70px 30px;
+}
+
+.feature-hero{
+  text-align:center;
+  padding:35px;
+  background:white;
+  border:1px solid #e5e6ea;
+  border-radius:22px;
+}
+
+.feature-big-icon{
+  font-size:50px;
+  margin-bottom:20px;
+}
+
+.feature-page h1{
+  font-size:34px;
+  margin-bottom:10px;
+}
+
+.feature-page p{
+  color:#777;
+  line-height:1.7;
+}
+
+.coming{
+  margin-top:25px;
+  display:inline-block;
+  padding:10px 16px;
+  border-radius:20px;
+  background:#fff0f0;
+  color:#d71920;
+  font-size:13px;
+  font-weight:bold;
+}
+
+/* =========================
+   PREMIUM
+========================= */
+
+.pricing{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+  max-width:800px;
+  margin:30px auto;
+}
+
+.price-card{
+  background:white;
+  border:1px solid #e4e5e9;
+  border-radius:20px;
+  padding:28px;
+}
+
+.price-card.premium{
+  border:2px solid #e21f26;
+}
+
+.price-card h3{
+  margin-bottom:10px;
+}
+
+.price{
+  font-size:35px;
+  font-weight:bold;
+  margin:18px 0;
+}
+
+.price span{
+  font-size:14px;
+  color:#777;
+  font-weight:normal;
+}
+
+.price-card ul{
+  list-style:none;
+  line-height:2;
+  color:#666;
+  margin-bottom:20px;
+}
+
+/* =========================
+   SETTINGS
+========================= */
+
+.settings-card{
+  max-width:700px;
+  margin:25px auto;
+  background:white;
+  border:1px solid #e4e5e9;
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.setting{
+  padding:18px 20px;
+  border-bottom:1px solid #eee;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.setting:last-child{
+  border-bottom:none;
+}
+
+.setting small{
+  display:block;
+  color:#777;
+  margin-top:4px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+  background:#111216;
+  color:#898b94;
+  padding:35px;
+  text-align:center;
+  font-size:13px;
+  margin-left:250px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+.mobile-menu{
+  display:none;
+  width:40px;
+  height:40px;
+  border:1px solid #ddd;
+  background:white;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+@media(max-width:900px){
+
+  .sidebar{
+    transform:translateX(-100%);
+    transition:.25s;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+  }
+
+  .mobile-menu{
+    display:block;
+  }
+
+  footer{
+    margin-left:0;
+  }
+
+  .tools{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .chat-input-wrap{
+    left:0;
+  }
+}
+
+@media(max-width:600px){
+
+  .topbar{
+    padding:0 15px;
+  }
+
+  .home{
+    padding:40px 18px;
+  }
+
+  .hero h1{
+    font-size:37px;
+  }
+
+  .hero p{
+    font-size:15px;
+  }
+
+  .tools{
+    grid-template-columns:1fr;
+  }
+
+  .message{
+    max-width:85%;
+  }
+
+  .chat-header{
+    padding:18px;
+  }
+
+  .chat-box{
+    padding:25px 12px 130px;
+  }
+
+  .pricing{
+    grid-template-columns:1fr;
+  }
+
+  .feature-page{
+    padding:40px 18px;
+  }
+
+}
+
+</style>
 </head>
 
 <body>
 
-<header>
+<div class="app">
 
-  <div class="logo">
-    <span>Red</span>DotStar AI Lab
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside class="sidebar" id="sidebar">
+
+  <div class="brand">
+
+    <div class="brand-logo">★</div>
+
+    <div class="brand-name">
+      <span>Red</span>DotStar
+      <small style="display:block;color:#777;font-size:10px;">
+        AI LAB
+      </small>
+    </div>
+
   </div>
 
-  <nav>
-    <button onclick="showPage('home')">Home</button>
-    <button onclick="showPage('chat')">AI Chat</button>
-    <button onclick="comingSoon('AI Image')">AI Image</button>
-    <button onclick="comingSoon('TTS')">TTS</button>
-    <button onclick="comingSoon('STT')">STT</button>
-  </nav>
+  <button class="new-chat" onclick="newChat()">
+    ＋ New Chat
+  </button>
+
+  <div class="nav-title">Workspace</div>
+
+  <button class="side-btn active" onclick="showPage('home',this)">
+    <span class="side-icon">⌂</span>
+    Home
+  </button>
+
+  <button class="side-btn" onclick="showPage('chat',this)">
+    <span class="side-icon">💬</span>
+    AI Chat
+  </button>
+
+  <button class="side-btn" onclick="showPage('image',this)">
+    <span class="side-icon">🎨</span>
+    AI Image
+  </button>
+
+  <button class="side-btn" onclick="showPage('tts',this)">
+    <span class="side-icon">🔊</span>
+    TTS
+  </button>
+
+  <button class="side-btn" onclick="showPage('stt',this)">
+    <span class="side-icon">🎙️</span>
+    STT
+  </button>
+
+  <div class="nav-title">Account</div>
+
+  <button class="side-btn" onclick="showPage('premium',this)">
+    <span class="side-icon">💎</span>
+    Premium
+  </button>
+
+  <button class="side-btn" onclick="showPage('settings',this)">
+    <span class="side-icon">⚙️</span>
+    Settings
+  </button>
+
+  <div class="sidebar-bottom">
+
+    <div class="credit-box">
+      <small>Free Credits</small>
+      <strong>100 credits</strong>
+    </div>
+
+    <button class="side-btn">
+      <span class="side-icon">👤</span>
+      Login / Sign Up
+    </button>
+
+  </div>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+<header class="topbar">
+
+  <div style="display:flex;align-items:center;gap:12px;">
+
+    <button class="mobile-menu" onclick="toggleSidebar()">
+      ☰
+    </button>
+
+    <div class="top-title" id="topTitle">
+      RedDotStar AI Lab
+    </div>
+
+  </div>
+
+  <div class="top-right">
+
+    <button class="icon-btn" title="Notifications">
+      🔔
+    </button>
+
+    <div class="profile">
+      RS
+    </div>
+
+  </div>
 
 </header>
 
 
-<!-- HOME -->
+<!-- =========================
+     HOME
+========================= -->
 
 <section id="home" class="page active">
 
+<div class="home">
+
   <div class="hero">
 
+    <div class="hero-logo">
+      ★
+    </div>
+
     <h1>
-      Create Anything with <span>AI</span>
+      Create Anything with
+      <span>AI</span>
     </h1>
 
     <p>
-      Welcome to RedDotStar AI Lab
+      Welcome to RedDotStar AI Lab — your simple AI workspace
+      for chat, images, voice and more.
     </p>
 
-    <button class="main-btn" onclick="showPage('chat')">
-      Start AI Chat
-    </button>
+    <div class="hero-buttons">
+
+      <button class="primary-btn"
+        onclick="showPage('chat')">
+        💬 Start AI Chat
+      </button>
+
+      <button class="secondary-btn"
+        onclick="showPage('image')">
+        🎨 Explore AI Tools
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="section-title">
+
+    <h2>AI Tools</h2>
+
+    <p>
+      Everything you need in one place.
+    </p>
 
   </div>
 
 
   <div class="tools">
 
-    <div class="card">
-      <h3>🤖 AI Chat</h3>
-      <p>Chat with powerful AI.</p>
-      <button onclick="showPage('chat')">
-        Open
-      </button>
-    </div>
+    <div class="tool-card"
+      onclick="showPage('chat')">
 
+      <div class="tool-icon">
+        💬
+      </div>
 
-    <div class="card">
-      <h3>🖼️ AI Image</h3>
-      <p>Create images using AI.</p>
-      <button onclick="comingSoon('AI Image')">
-        Coming Soon
-      </button>
-    </div>
+      <h3>AI Chat</h3>
 
+      <p>
+        Ask questions, create content,
+        learn and brainstorm with AI.
+      </p>
 
-    <div class="card">
-      <h3>🔊 TTS</h3>
-      <p>Convert text into voice.</p>
-      <button onclick="comingSoon('TTS')">
-        Coming Soon
-      </button>
-    </div>
-
-
-    <div class="card">
-      <h3>🎙️ STT</h3>
-      <p>Convert voice into text.</p>
-      <button onclick="comingSoon('STT')">
-        Coming Soon
-      </button>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- AI CHAT -->
-
-<section id="chat" class="page">
-
-  <div class="chat-container">
-
-    <h2>🤖 RedDotStar AI Chat</h2>
-
-    <div id="chatBox" class="chat-box">
-
-      <div class="message">
-        👋 Hello! RedDotStar AI Lab Chat is ready.
+      <div class="tool-link">
+        Open Chat →
       </div>
 
     </div>
 
 
-    <div class="input-area">
+    <div class="tool-card"
+      onclick="showPage('image')">
+
+      <div class="tool-icon">
+        🎨
+      </div>
+
+      <h3>AI Image</h3>
+
+      <p>
+        Create amazing images from
+        simple text prompts.
+      </p>
+
+      <div class="tool-link">
+        Explore →
+      </div>
+
+    </div>
+
+
+    <div class="tool-card"
+      onclick="showPage('tts')">
+
+      <div class="tool-icon">
+        🔊
+      </div>
+
+      <h3>Text to Speech</h3>
+
+      <p>
+        Turn your text into natural
+        sounding AI voice.
+      </p>
+
+      <div class="tool-link">
+        Explore →
+      </div>
+
+    </div>
+
+
+    <div class="tool-card"
+      onclick="showPage('stt')">
+
+      <div class="tool-icon">
+        🎙️
+      </div>
+
+      <h3>Speech to Text</h3>
+
+      <p>
+        Convert voice recordings
+        into text with AI.
+      </p>
+
+      <div class="tool-link">
+        Explore →
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     CHAT
+========================= -->
+
+<section id="chat" class="page chat-page">
+
+  <div class="chat-header">
+
+    <h2>💬 AI Chat</h2>
+
+    <p>
+      Powered by RedDotStar AI Lab
+    </p>
+
+  </div>
+
+
+  <div id="chatBox" class="chat-box">
+
+    <div class="message-row">
+
+      <div class="avatar">
+        ★
+      </div>
+
+      <div class="message ai-message">
+        👋 Hello! I'm RedDotStar AI.<br><br>
+        How can I help you today?
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="chat-input-wrap">
+
+    <div class="chat-input">
 
       <input
         type="text"
         id="userInput"
-        placeholder="Ask anything..."
+        placeholder="Message RedDotStar AI..."
         onkeydown="handleEnter(event)"
       >
 
-      <button onclick="sendMessage()">
-        Send
+      <button
+        class="send-btn"
+        id="sendBtn"
+        onclick="sendMessage()">
+        ➤
       </button>
 
     </div>
@@ -326,101 +1100,529 @@
 </section>
 
 
+<!-- =========================
+     AI IMAGE
+========================= -->
+
+<section id="image" class="page">
+
+<div class="feature-page">
+
+  <div class="feature-hero">
+
+    <div class="feature-big-icon">
+      🎨
+    </div>
+
+    <h1>AI Image</h1>
+
+    <p>
+      Create beautiful images from your imagination
+      using simple AI prompts.
+    </p>
+
+    <div class="coming">
+      COMING SOON
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     TTS
+========================= -->
+
+<section id="tts" class="page">
+
+<div class="feature-page">
+
+  <div class="feature-hero">
+
+    <div class="feature-big-icon">
+      🔊
+    </div>
+
+    <h1>Text to Speech</h1>
+
+    <p>
+      Convert written text into natural AI-generated
+      speech.
+    </p>
+
+    <div class="coming">
+      COMING SOON
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     STT
+========================= -->
+
+<section id="stt" class="page">
+
+<div class="feature-page">
+
+  <div class="feature-hero">
+
+    <div class="feature-big-icon">
+      🎙️
+    </div>
+
+    <h1>Speech to Text</h1>
+
+    <p>
+      Convert your voice into accurate text using AI.
+    </p>
+
+    <div class="coming">
+      COMING SOON
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     PREMIUM
+========================= -->
+
+<section id="premium" class="page">
+
+<div class="feature-page">
+
+  <div class="feature-hero">
+
+    <div class="feature-big-icon">
+      💎
+    </div>
+
+    <h1>RedDotStar Premium</h1>
+
+    <p>
+      Unlock more AI power with premium features.
+    </p>
+
+  </div>
+
+
+  <div class="pricing">
+
+    <div class="price-card">
+
+      <h3>Free</h3>
+
+      <div class="price">
+        ₹0
+        <span>/ month</span>
+      </div>
+
+      <ul>
+        <li>✓ AI Chat</li>
+        <li>✓ Limited credits</li>
+        <li>✓ Basic AI tools</li>
+        <li>✓ No payment required</li>
+      </ul>
+
+      <button class="secondary-btn">
+        Current Plan
+      </button>
+
+    </div>
+
+
+    <div class="price-card premium">
+
+      <h3>Premium</h3>
+
+      <div class="price">
+        ₹—
+        <span>/ month</span>
+      </div>
+
+      <ul>
+        <li>✓ More AI credits</li>
+        <li>✓ AI Image</li>
+        <li>✓ TTS & STT</li>
+        <li>✓ Priority AI access</li>
+      </ul>
+
+      <button class="primary-btn"
+        onclick="alert('Premium payment will be added later.')">
+        Upgrade
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+
+<!-- =========================
+     SETTINGS
+========================= -->
+
+<section id="settings" class="page">
+
+<div class="feature-page">
+
+  <div class="feature-hero">
+
+    <div class="feature-big-icon">
+      ⚙️
+    </div>
+
+    <h1>Settings</h1>
+
+    <p>
+      Manage your RedDotStar AI Lab preferences.
+    </p>
+
+  </div>
+
+
+  <div class="settings-card">
+
+    <div class="setting">
+
+      <div>
+        <strong>Appearance</strong>
+        <small>Light interface</small>
+      </div>
+
+      <span>☀️</span>
+
+    </div>
+
+
+    <div class="setting">
+
+      <div>
+        <strong>Language</strong>
+        <small>English</small>
+      </div>
+
+      <span>🌐</span>
+
+    </div>
+
+
+    <div class="setting">
+
+      <div>
+        <strong>Notifications</strong>
+        <small>Coming later</small>
+      </div>
+
+      <span>🔔</span>
+
+    </div>
+
+
+    <div class="setting">
+
+      <div>
+        <strong>Account</strong>
+        <small>Login system coming later</small>
+      </div>
+
+      <span>👤</span>
+
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
 <footer>
-  © 2026 RedDotStar AI Lab — Create Anything with AI
+  © 2026 RedDotStar AI Lab · Create Anything with AI
 </footer>
 
 
 <script>
 
-  function showPage(page) {
+/* =========================
+   PAGE NAVIGATION
+========================= */
 
-    document.querySelectorAll('.page')
-      .forEach(function(section) {
-        section.classList.remove('active');
-      });
+function showPage(page, button){
 
-    document.getElementById(page)
-      .classList.add('active');
+  document.querySelectorAll(".page")
+    .forEach(function(section){
+      section.classList.remove("active");
+    });
 
-    window.scrollTo(0, 0);
+  const selected =
+    document.getElementById(page);
+
+  if(selected){
+    selected.classList.add("active");
   }
 
+  document.querySelectorAll(".side-btn")
+    .forEach(function(btn){
+      btn.classList.remove("active");
+    });
 
-  function comingSoon(tool) {
-
-    alert(tool + " is coming soon.");
+  if(button){
+    button.classList.add("active");
   }
 
+  const titles = {
+    home:"RedDotStar AI Lab",
+    chat:"AI Chat",
+    image:"AI Image",
+    tts:"Text to Speech",
+    stt:"Speech to Text",
+    premium:"Premium",
+    settings:"Settings"
+  };
 
-  function handleEnter(event) {
+  document.getElementById("topTitle").textContent =
+    titles[page] || "RedDotStar AI Lab";
 
-    if (event.key === "Enter") {
-      sendMessage();
-    }
+  window.scrollTo(0,0);
 
+  document.getElementById("sidebar")
+    .classList.remove("open");
+}
+
+
+/* =========================
+   MOBILE SIDEBAR
+========================= */
+
+function toggleSidebar(){
+
+  document.getElementById("sidebar")
+    .classList.toggle("open");
+
+}
+
+
+/* =========================
+   NEW CHAT
+========================= */
+
+function newChat(){
+
+  const chatBox =
+    document.getElementById("chatBox");
+
+  chatBox.innerHTML = `
+
+    <div class="message-row">
+
+      <div class="avatar">
+        ★
+      </div>
+
+      <div class="message ai-message">
+        👋 New chat started!<br><br>
+        What would you like to create today?
+      </div>
+
+    </div>
+
+  `;
+
+  showPage("chat");
+
+}
+
+
+/* =========================
+   ENTER KEY
+========================= */
+
+function handleEnter(event){
+
+  if(event.key === "Enter"){
+    event.preventDefault();
+    sendMessage();
   }
 
-async function sendMessage() {
-  const input = document.getElementById("userInput");
-  const chatBox = document.getElementById("chatBox");
-  const message = input.value.trim();
+}
 
-  if (!message) return;
 
-  input.value = "";
-  input.disabled = true;
+/* =========================
+   AI CHAT
+========================= */
 
-  const userMessage = document.createElement("div");
-  userMessage.className = "message";
+async function sendMessage(){
 
-  const userLabel = document.createElement("b");
-  userLabel.textContent = "You: ";
-  userMessage.appendChild(userLabel);
-  userMessage.appendChild(document.createTextNode(message));
-  chatBox.appendChild(userMessage);
+  const input =
+    document.getElementById("userInput");
 
-  const replyBox = document.createElement("div");
-  replyBox.className = "message";
-  replyBox.textContent = "RedDotStar AI: Soch raha hai...";
-  chatBox.appendChild(replyBox);
+  const chatBox =
+    document.getElementById("chatBox");
+
+  const sendBtn =
+    document.getElementById("sendBtn");
+
+  const message =
+    input.value.trim();
+
+  if(!message) return;
+
+  input.value="";
+  input.disabled=true;
+  sendBtn.disabled=true;
+
+
+  /* USER MESSAGE */
+
+  const userRow =
+    document.createElement("div");
+
+  userRow.className =
+    "message-row user";
+
+  userRow.innerHTML = `
+
+    <div class="avatar">
+      👤
+    </div>
+
+    <div class="message user-message"></div>
+
+  `;
+
+  userRow.querySelector(".user-message")
+    .textContent = message;
+
+  chatBox.appendChild(userRow);
+
+
+  /* THINKING MESSAGE */
+
+  const aiRow =
+    document.createElement("div");
+
+  aiRow.className =
+    "message-row";
+
+  aiRow.innerHTML = `
+
+    <div class="avatar">
+      ★
+    </div>
+
+    <div class="message ai-message">
+
+      <div class="thinking">
+
+        <span>RedDotStar AI is thinking</span>
+
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+
+      </div>
+
+    </div>
+
+  `;
+
+  chatBox.appendChild(aiRow);
+
+  chatBox.scrollTop =
+    chatBox.scrollHeight;
+
+
+  const replyBox =
+    aiRow.querySelector(".ai-message");
+
+
+  /* WORKER */
 
   const WORKER_URL =
     "https://reddotstar-ai.geniva0ai.workers.dev/";
 
-  try {
-    const response = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({ message: message })
-    });
 
-    const data = await response.json();
+  try{
 
-    if (!response.ok) {
-      throw new Error(data.error || "AI request failed.");
+    const response =
+      await fetch(WORKER_URL,{
+        method:"POST",
+
+        headers:{
+          "Content-Type":"application/json",
+          "Accept":"application/json"
+        },
+
+        body:JSON.stringify({
+          message:message
+        })
+      });
+
+
+    const data =
+      await response.json();
+
+
+    if(!response.ok){
+
+      throw new Error(
+        data.error ||
+        "AI request failed."
+      );
+
     }
 
-    replyBox.textContent =
-      "RedDotStar AI: " + (data.reply || "Koi jawab nahi mila.");
 
-  } catch (error) {
     replyBox.textContent =
-      "Error: " + error.message +
-      " Please try again.";
+      data.reply ||
+      "Koi jawab nahi mila.";
 
-  } finally {
-    input.disabled = false;
+
+  }catch(error){
+
+    replyBox.textContent =
+      "⚠️ " +
+      error.message +
+      "\n\nPlease try again.";
+
+
+  }finally{
+
+    input.disabled=false;
+    sendBtn.disabled=false;
+
     input.focus();
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-}
 
+    chatBox.scrollTop =
+      chatBox.scrollHeight;
+
+  }
+
+}
 
 </script>
 
 </body>
 </html>
+```
