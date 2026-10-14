@@ -1,4 +1,4 @@
-const MODEL = "gemini-3.8-flash";
+const MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"];
 const MAX_MESSAGE = 12000;
 const MAX_HISTORY = 12;
 const MAX_MEMORY = 4000;
@@ -33,27 +33,38 @@ function cleanHistory(history) {
 }
 
 async function gemini(env, body) {
-  let last;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": env.GEMINI_API_KEY
-        },
-        body: JSON.stringify(body)
-      });
-      const d = await r.json();
-      if (r.ok) return d;
-      last = new Error(d?.error?.message || `Gemini API error (${r.status})`);
-      if (![429, 502, 503, 504].includes(r.status)) throw last;
-    } catch (e) {
-      last = e;
+  let lastError = null;
+
+  for (const model of MODELS) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": env.GEMINI_API_KEY
+          },
+          body: JSON.stringify(body)
+        });
+
+        const d = await r.json();
+        if (r.ok) return { data: d, model };
+
+        const apiMessage = d?.error?.message || `Gemini API error (${r.status})`;
+        lastError = new Error(apiMessage);
+
+        // 429/5xx can be temporary capacity/rate-limit errors, so try again
+        // and then move to the next Flash model as a fallback.
+        if (![429, 500, 502, 503, 504].includes(r.status)) throw lastError;
+      } catch (e) {
+        lastError = e;
+      }
+
+      if (attempt === 0) await sleep(500);
     }
-    if (attempt < 2) await sleep(700 * Math.pow(2, attempt));
   }
-  throw last || new Error("Gemini request failed.");
+
+  throw lastError || new Error("Gemini request failed.");
 }
 
 export default {
@@ -89,27 +100,42 @@ export default {
       const requestBody = {
         systemInstruction: { parts: [{ text: systemInstruction }] },
         contents,
-        generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 2048
+        }
       };
 
       if (body.useSearch === true) requestBody.tools = [{ google_search: {} }];
 
-      const data = await gemini(env, requestBody);
+      const result = await gemini(env, requestBody);
+      const data = result.data;
       const reply = data?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("").trim();
-      if (!reply) return json({ error: "Gemini returned no text. Please try again." }, 502);
+
+      if (!reply) {
+        return json({ error: "Gemini returned no text. Please try again." }, 502);
+      }
 
       const meta = data?.candidates?.[0]?.groundingMetadata || data?.candidates?.[0]?.grounding_metadata;
       const chunks = meta?.groundingChunks || meta?.grounding_chunks || [];
-      const sources = chunks.map(c => c?.web).filter(w => w?.uri).map(w => ({ title: w.title || w.uri, uri: w.uri })).slice(0, 8);
+      const sources = chunks
+        .map(c => c?.web)
+        .filter(w => w?.uri)
+        .map(w => ({ title: w.title || w.uri, uri: w.uri }))
+        .slice(0, 8);
 
       return json({
         reply,
         sources,
         usedSearch: body.useSearch === true,
+        model: result.model,
         creditCost: body.useSearch === true ? 2 : 1
       });
     } catch (error) {
-      return json({ error: error?.message || "Request failed. Please try again." }, 500);
+      return json({
+        error: "AI service is temporarily busy. Please try again in a few seconds.",
+        detail: error?.message || "Request failed."
+      }, 503);
     }
   }
 };
